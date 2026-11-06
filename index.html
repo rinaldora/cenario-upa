@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Cenário UPA</title>
+<meta name="description" content="Registro do cenário dos setores da UPA">
+<meta name="theme-color" content="#1a73d9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cenário UPA">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{
+    --bg:#f3f5f8; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+    --line:#e5e7eb; --field:#f7f8fa; --primary:#1a73d9; --primary-dark:#145fb5;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  header{background:#fff;border-bottom:1px solid var(--line);padding:14px 16px;
+    padding-top:calc(14px + env(safe-area-inset-top));display:flex;align-items:center;gap:14px;
+    position:sticky;top:0;z-index:5}
+  .logo{width:48px;height:48px;border-radius:50%;background:#e8f0fb;display:grid;place-items:center;flex:none}
+  .logo svg{width:24px;height:24px;stroke:var(--primary)}
+  header h1{margin:0;font-size:20px;font-weight:600}
+  header p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+  header .clear{margin-left:auto;background:none;border:1px solid var(--line);color:var(--muted);
+    border-radius:10px;padding:8px 12px;font-size:14px}
+  main{padding:16px;padding-bottom:110px;max-width:560px;margin:0 auto}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;margin-bottom:16px;overflow:hidden}
+  .top{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:18px}
+  .lbl{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:15px;margin-bottom:10px}
+  .lbl svg{width:18px;height:18px;stroke:var(--muted)}
+  input[type=date]{width:100%;height:50px;border:1px solid var(--line);border-radius:12px;background:var(--field);
+    padding:0 12px;font-size:17px;color:var(--text);font-family:inherit}
+  .turnos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .turnos button{height:50px;border-radius:12px;border:1px solid var(--line);background:var(--field);font-size:17px;color:var(--text)}
+  .turnos button.on{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
+  .sec-head{width:100%;display:flex;align-items:center;gap:12px;padding:16px 18px;background:none;border:0;
+    font-size:19px;font-weight:600;color:var(--text);text-align:left;font-family:inherit}
+  .sec-head .emo{font-size:24px}
+  .sec-head .tot{margin-left:auto;font-size:14px;font-weight:600;color:var(--primary);background:#e8f0fb;
+    border-radius:999px;padding:4px 10px}
+  .sec-head .chev{width:20px;height:20px;stroke:var(--muted);transition:transform .2s;flex:none}
+  .sec-head .grow{flex:1}
+  .sec-head .tot{margin-left:0;margin-right:6px}
+  .card.closed .chev{transform:rotate(180deg)}
+  .card.closed .rows{display:none}
+  .rows{padding:0 18px 10px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}
+  .row label{font-size:16px;color:#4b5563}
+  .row input{width:96px;height:46px;border:1px solid var(--line);border-radius:12px;background:var(--field);
+    text-align:center;font-size:19px;color:var(--text);font-family:inherit}
+  .row input:focus,input[type=date]:focus{outline:2px solid var(--primary);outline-offset:-1px;background:#fff}
+  .fichas{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;font-size:17px;font-weight:600}
+  .fichas span:last-child{color:var(--primary);font-size:20px}
+  .fichas small{display:block;font-weight:400;font-size:13px;color:var(--muted);margin-top:2px}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);
+    padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+  .btn{width:100%;max-width:560px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:10px;
+    height:54px;border:0;border-radius:14px;background:var(--primary);color:#fff;font-size:18px;font-weight:600;font-family:inherit}
+  .btn:active{background:var(--primary-dark)}
+  .btn svg{width:20px;height:20px;stroke:#fff}
+  .btn.sec{background:#fff;color:var(--primary);border:1px solid var(--primary)}
+  .btn.wa{background:#1fa855}
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+  .modal.show{display:flex}
+  .sheet{background:#fff;width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:18px 16px;
+    padding-bottom:calc(18px + env(safe-area-inset-bottom));max-height:90vh;display:flex;flex-direction:column;gap:12px}
+  .sheet h2{margin:0;font-size:18px;display:flex;justify-content:space-between;align-items:center}
+  .sheet h2 button{background:none;border:0;font-size:26px;color:var(--muted);line-height:1}
+  pre{margin:0;background:var(--field);border:1px solid var(--line);border-radius:12px;padding:14px;
+    font-family:inherit;font-size:15px;line-height:1.45;white-space:pre-wrap;overflow:auto;flex:1}
+  .acts{display:grid;gap:10px}
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#111827;color:#fff;
+    padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg></div>
+  <div><h1>Cenário UPA</h1><p>UPA Vila Santa Catarina</p></div>
+  <button class="clear" id="limpar">Limpar</button>
+</header>
+
+<main>
+  <div class="card">
+    <div class="top">
+      <div>
+        <div class="lbl"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Data</div>
+        <input type="date" id="data">
+      </div>
+      <div>
+        <div class="lbl"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Turno</div>
+        <div class="turnos"><button data-t="06h">06h</button><button data-t="18h">18h</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="secoes"></div>
+
+  <div class="card">
+    <div class="fichas">
+      <span>🗂️ Fichas no CROSS<small>Soma dos CROSS dos setores</small></span>
+      <span id="fichas">00</span>
+    </div>
+  </div>
+</main>
+
+<div class="bar">
+  <button class="btn" id="gerar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>Gerar Mensagem</button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <h2>Mensagem <button id="fechar" aria-label="Fechar">×</button></h2>
+    <pre id="texto"></pre>
+    <div class="acts">
+      <button class="btn wa" id="whats">Enviar no WhatsApp</button>
+      <button class="btn sec" id="copiar">Copiar texto</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SECOES = [
+  { id:'triagem', titulo:'Triagem', emoji:'📝', inline:true,
+    itens:['Triagem Adulto','Triagem Pediátrica'] },
+  { id:'emerg', titulo:'Sala de Emergência', emoji:'🚑', total:['Estabilização','Com Gravidade','Poltrona'],
+    itens:['Estabilização','Com Gravidade','Poltrona','IOT','Tele PQ','CROSS','Convênio','HMVSC','TX Morumbi','Reaval','Cedido','Alta'] },
+  { id:'verde', titulo:'Medicação Verde', emoji:'📗',
+    itens:['Ag. At. Médico','Ag. Medicação','Ag. Internação','Reaval'] },
+  { id:'amarela', titulo:'Medicação Amarela', emoji:'📙',
+    itens:['Ag. At. Médico','Ag. Medicação','Ag. Internação','Reaval'] },
+  { id:'pre', titulo:'Pré internação / Medicação', emoji:'🩺', total:['Poltronas','Medicação'],
+    itens:['Poltronas','Medicação','Tele PQ','CROSS','Convênio','Caso Social','HMVSC','TX Morumbi','Reaval','Cedido','Alta'] },
+  { id:'medinf', titulo:'Medicação Infantil', emoji:'🧸',
+    itens:['Ag. At. Médico','Ag. Medicação','Reaval'] },
+  { id:'obsinf', titulo:'Obs. Infantil', emoji:'🧸', total:['Com Gravidade','Sem Gravidade'],
+    itens:['Com Gravidade','Sem Gravidade','Tele PQ','CROSS','Convênio','Caso Social','HMVSC','Reaval','Cedido','Alta'] },
+  { id:'obsad', titulo:'Obs. Adulto', emoji:'🛌🏽', total:['Sem Gravidade','Contingência'],
+    itens:['Sem Gravidade','Contingência','Tele PQ','CROSS','Convênio','Caso Social','HMVSC','TX Morumbi','Reaval','Cedido','Alta'] },
+  { id:'mov', titulo:'Movimentações', emoji:'🚒', total:true,
+    itens:['HMVSC','CROSS','Evasão','Óbitos','Alta','TX Morumbi','Convênio','Ag ambulância'] },
+];
+
+const KEY = 'cenario-upa-v1';
+let estado = { valores:{}, fechadas:{} };
+try { estado = Object.assign(estado, JSON.parse(localStorage.getItem(KEY)) || {}); } catch(e){}
+const salvar = () => { try { localStorage.setItem(KEY, JSON.stringify(estado)); } catch(e){} };
+
+const $ = s => document.querySelector(s);
+const chave = (s,i) => s + '|' + i;
+const val = (s,i) => parseInt(estado.valores[chave(s,i)] || 0, 10) || 0;
+const dd = n => String(n).padStart(2,'0');
+
+// Data e turno
+const hoje = new Date();
+$('#data').value = `${hoje.getFullYear()}-${dd(hoje.getMonth()+1)}-${dd(hoje.getDate())}`;
+let turno = hoje.getHours() < 12 ? '06h' : '18h';
+function marcarTurno(){ document.querySelectorAll('.turnos button').forEach(b => b.classList.toggle('on', b.dataset.t === turno)); }
+document.querySelectorAll('.turnos button').forEach(b => b.onclick = () => { turno = b.dataset.t; marcarTurno(); });
+marcarTurno();
+
+// Monta as seções
+const chev = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>';
+$('#secoes').innerHTML = SECOES.map(s => `
+  <div class="card ${estado.fechadas[s.id] ? 'closed':''}" data-sec="${s.id}">
+    <button class="sec-head" type="button">
+      <span class="emo">${s.emoji}</span><span>${s.titulo}</span><span class="grow"></span>
+      ${s.total ? `<span class="tot" id="tot-${s.id}">00</span>` : ''}${chev}
+    </button>
+    <div class="rows">
+      ${s.itens.map((it,idx) => `
+        <div class="row">
+          <label for="f-${s.id}-${idx}">${it}</label>
+          <input id="f-${s.id}-${idx}" type="number" inputmode="numeric" pattern="[0-9]*" min="0"
+            placeholder="0" data-k="${chave(s.id,it)}" value="${estado.valores[chave(s.id,it)] ?? ''}">
+        </div>`).join('')}
+    </div>
+  </div>`).join('');
+
+document.querySelectorAll('.sec-head').forEach(h => h.onclick = () => {
+  const card = h.parentElement; card.classList.toggle('closed');
+  estado.fechadas[card.dataset.sec] = card.classList.contains('closed'); salvar();
+});
+document.querySelectorAll('.row input').forEach(inp => {
+  inp.addEventListener('focus', () => inp.select());
+  inp.addEventListener('input', () => {
+    const v = inp.value.replace(/\D/g,'');
+    if (v === '') delete estado.valores[inp.dataset.k]; else estado.valores[inp.dataset.k] = v;
+    salvar(); atualizarTotais();
+  });
+});
+
+function totalSecao(s){ return (Array.isArray(s.total) ? s.total : s.itens).reduce((a,it) => a + val(s.id,it), 0); }
+function fichasCross(){ return SECOES.filter(s => s.id !== 'mov' && s.itens.includes('CROSS')).reduce((a,s) => a + val(s.id,'CROSS'), 0); }
+function atualizarTotais(){
+  SECOES.filter(s => s.total).forEach(s => $('#tot-'+s.id).textContent = dd(totalSecao(s)));
+  $('#fichas').textContent = dd(fichasCross());
+}
+atualizarTotais();
+
+// Mensagem
+function montarMensagem(){
+  const [a,m,d] = ($('#data').value || '').split('-');
+  const linhas = ['🚨 CENÁRIO UPA 🚨', `${d}/${m}/${a} - ${turno}`];
+  SECOES.forEach(s => {
+    linhas.push('');
+    if (s.inline) { s.itens.forEach(it => linhas.push(`${s.emoji} ${it}: ${dd(val(s.id,it))}`)); return; }
+    linhas.push(s.total ? `${s.emoji} ${s.titulo}: ${dd(totalSecao(s))}` : `${s.emoji} ${s.titulo}`);
+    s.itens.forEach(it => linhas.push(`${it}: ${dd(val(s.id,it))}`));
+  });
+  linhas.push('', `🗂️ Fichas no CROSS: ${dd(fichasCross())}`);
+  return linhas.join('\n');
+}
+
+function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 1800); }
+$('#gerar').onclick = () => { $('#texto').textContent = montarMensagem(); $('#modal').classList.add('show'); };
+$('#fechar').onclick = () => $('#modal').classList.remove('show');
+$('#modal').onclick = e => { if (e.target.id === 'modal') $('#modal').classList.remove('show'); };
+$('#copiar').onclick = async () => {
+  const t = montarMensagem();
+  try { await navigator.clipboard.writeText(t); }
+  catch(e){ const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  toast('Mensagem copiada');
+};
+$('#whats').onclick = () => { window.open('https://wa.me/?text=' + encodeURIComponent(montarMensagem()), '_blank'); };
+$('#limpar').onclick = () => {
+  if (!confirm('Zerar todos os campos?')) return;
+  estado.valores = {}; salvar();
+  document.querySelectorAll('.row input').forEach(i => i.value = ''); atualizarTotais(); toast('Campos zerados');
+};
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
